@@ -1,5 +1,9 @@
+// SPRITES 
+const spritesCube  = new Image(); spritesCube.src  = 'sprites/cube.svg';
+const spritesSpike = new Image(); spritesSpike.src = 'sprites/spike.svg';
+
 // Game constants
-const CANVAS_W = 1024, CANVAS_H = 704;
+const CANVAS_W = 1024, CANVAS_H = 728;
 const GROUND_Y  = CANVAS_H - 100;      // Ground line Y (shared for all objects)
 const FLOOR_Y   = GROUND_Y;            // Alias for compatibility
 const PLAYER_X  = 150;                  // Fixed player X position
@@ -360,29 +364,34 @@ function drawRoundedRect(c, x,y,w,h,r,fill,stroke,strokeW=2) {
   if (stroke) { c.strokeStyle = stroke; c.lineWidth = strokeW; c.stroke(); }
 }
 
-// Draws a spike obstacle
+// Draws a spike obstacle using sprite (sprites/spike.svg)
+
 function drawSpike(c, x, y, inverted=false) {
-  const h = 36, w = 30;
-  c.beginPath();
-  if (!inverted) {
-    c.moveTo(x, y);
-    c.lineTo(x + w/2, y - h);
-    c.lineTo(x + w, y);
+  const w = 30, h = 36;
+  if (spritesSpike.complete && spritesSpike.naturalWidth > 0) {
+    c.save();
+    if (inverted) {
+    
+      c.translate(x + w / 2, y + h / 2);
+      c.scale(1, -1);
+      c.drawImage(spritesSpike, -w / 2, -h / 2, w, h);
+    } else {
+    
+      c.drawImage(spritesSpike, x, y - h, w, h);
+    }
+    c.restore();
   } else {
-    c.moveTo(x, y);
-    c.lineTo(x + w/2, y + h);
-    c.lineTo(x + w, y);
+   
+    c.beginPath();
+    if (!inverted) {
+      c.moveTo(x, y); c.lineTo(x + w/2, y - h); c.lineTo(x + w, y);
+    } else {
+      c.moveTo(x, y); c.lineTo(x + w/2, y + h); c.lineTo(x + w, y);
+    }
+    c.closePath();
+    c.fillStyle = '#ff4466'; c.fill();
+    c.strokeStyle = '#ff0033'; c.lineWidth = 1; c.stroke();
   }
-  c.closePath();
-  c.fillStyle = '#ff4466';
-  c.fill();
-  c.strokeStyle = '#ff0033';
-  c.lineWidth = 1;
-  c.stroke();
-  // glow
-  c.shadowBlur = 8; c.shadowColor = '#ff0033';
-  c.stroke();
-  c.shadowBlur = 0;
 }
 
 // Draws an orb pickup
@@ -464,27 +473,19 @@ function drawPlayer(c, p, mode, time) {
     c.rotate(p.rotation * Math.PI/180);
     c.translate(-PLAYER_SIZE/2, -PLAYER_SIZE/2);
 
-    // Main body
-    const grad = c.createLinearGradient(0,0,PLAYER_SIZE,PLAYER_SIZE);
-    grad.addColorStop(0, '#00f5ff');
-    grad.addColorStop(1, '#0055ff');
-    drawRoundedRect(c, 0,0,PLAYER_SIZE,PLAYER_SIZE,5,grad,'#00ddff',2);
-
-    // Eye
-    c.fillStyle = '#fff';
-    c.fillRect(8, 8, 10, 10);
-    c.fillStyle = '#003399';
-    c.fillRect(11, 11, 5, 5);
-
-    // Shine
-    c.fillStyle = 'rgba(255,255,255,0.25)';
-    drawRoundedRect(c,4,4,14,12,3,'rgba(255,255,255,0.2)',null);
-
-    // Glow
-    c.shadowBlur = 15; c.shadowColor = '#00f5ff';
-    c.strokeStyle = '#00f5ff'; c.lineWidth = 1;
-    drawRoundedRect(c,0,0,PLAYER_SIZE,PLAYER_SIZE,5,null,'#00f5ff',1);
-    c.shadowBlur = 0;
+    if (spritesCube.complete && spritesCube.naturalWidth > 0) {
+     
+      c.shadowBlur = 15; c.shadowColor = '#00f5ff';
+      c.drawImage(spritesCube, 0, 0, PLAYER_SIZE, PLAYER_SIZE);
+      c.shadowBlur = 0;
+    } else {
+   
+      const grad = c.createLinearGradient(0,0,PLAYER_SIZE,PLAYER_SIZE);
+      grad.addColorStop(0, '#00f5ff'); grad.addColorStop(1, '#0055ff');
+      drawRoundedRect(c, 0,0,PLAYER_SIZE,PLAYER_SIZE,5,grad,'#00ddff',2);
+      c.fillStyle='#fff'; c.fillRect(8,8,10,10);
+      c.fillStyle='#003399'; c.fillRect(11,11,5,5);
+    }
 
   } else if (mode === MODE_UFO) {
     c.rotate(0);

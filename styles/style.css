@@ -172,7 +172,7 @@
 
  /* Buttons */
  .btn {
-   padding: 12px 36px;
+   padding: 5px 36px;
    border: none;
    border-radius: var(--radius);
    font-size: 15px;
