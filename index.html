@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geo Dash</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+  <link rel="stylesheet" href="styles/style.css" />
+</head>
+<body>
+  <div id="game-wrapper">
+
+    <!-- Start screen -->
+    <div id="start-screen" class="screen">
+      <h1 class="game-title">JS Dash</h1>
+
+      <div class="how-to-play">
+        <h2>Как играть</h2>
+        <div class="instruction-list">
+          <div class="instruction-item">
+            <span class="instr-key">ЛКМ</span>
+            <span>Прыжок / Активация орба / Полёт вверх</span>
+          </div>
+          <div class="instruction-item">
+            <span class="instr-key">Пробел</span>
+            <span>Пауза / Продолжить игру</span>
+          </div>
+          <div class="instruction-item">
+            <span class="instr-key"><i class="fa-solid fa-circle" style="color: yellow;"></i> Орб</span>
+            <span>Жёлтый — стандартный прыжок</span>
+          </div>
+          <div class="instruction-item">
+            <span class="instr-key"><i class="fa-solid fa-circle" style="color: violet;"></i> Орб</span>
+            <span>Розовый — прыжок ½ силы</span>
+          </div>
+          <div class="instruction-item">
+            <span class="instr-key"><i class="fa-solid fa-circle" style="color: red;"></i> Орб</span>
+            <span>Красный — двойной прыжок</span>
+          </div>
+          <div class="instruction-item">
+            <span class="instr-key"><i class="fa-solid fa-door-open"></i> Портал</span>
+            <span>Смена режима: куб / тарелка / пила</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="name-form">
+        <label class="name-label" for="player-name">Ваше имя</label>
+        <input id="player-name" type="text" maxlength="20" placeholder="Введите имя..." autocomplete="off" />
+        <button id="btn-start" class="btn btn-primary" disabled><i class="fa-solid fa-play"></i> Начать игру</button>
+      </div>
+    </div>
+
+    <!-- Game screen -->
+    <div id="game-screen" class="screen hidden">
+      <!-- HUD -->
+      <div id="hud">
+        <div class="hud-block">
+          <span class="hud-icon"><i class="fa-solid fa-clock"></i></span>
+          <div>
+            <div class="hud-label">Время</div>
+            <div class="hud-value" id="hud-timer">02:00</div>
+          </div>
+        </div>
+        <div class="hud-block">
+          <span class="hud-icon"><i class="fa-solid fa-star"></i></span>
+          <div>
+            <div class="hud-label">Очки</div>
+            <div class="hud-value" id="hud-score">0</div>
+          </div>
+        </div>
+        <div class="hud-block">
+          <span class="hud-icon"><i class="fa-solid fa-coins"></i></span>
+          <div>
+            <div class="hud-label">Монеты</div>
+            <div class="hud-value" id="hud-coins">0</div>
+          </div>
+        </div>
+        <div class="hud-block">
+          <span class="hud-icon"><i class="fa-solid fa-user"></i></span>
+          <div>
+            <div class="hud-label">Игрок</div>
+            <div>
+              <span class="hud-value" id="hud-name">—</span>
+              <span class="tester-badge" id="tester-badge">TEST</span>
+            </div>
+          </div>
+        </div>
+        <div class="hud-block" style="border-right:none; margin-left:auto; gap:10px;">
+          <button id="btn-pause"><i class="fa-solid fa-pause"></i> ПАУЗА</button>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div id="progress-bar-container">
+        <div id="progress-bar"></div>
+        <span id="progress-pct">0%</span>
+      </div>
+
+      <!-- Mode indicator -->
+      <div id="mode-indicator">Куб</div>
+
+      <!-- Main canvas -->
+      <canvas id="game-canvas" width="1024" height="704"></canvas>
+
+      <!-- Particle canvas -->
+      <canvas id="particle-canvas" width="1024" height="768"></canvas>
+
+      <!-- Pause overlay -->
+      <div id="pause-overlay">
+        <div class="pause-box">
+          <h2>Пауза</h2>
+          <p>Нажми Пробел или кнопку Пауза для продолжения</p>
+        </div>
+      </div>
+
+      <!-- Death flash -->
+      <div id="death-flash"></div>
+    </div>
+
+    <!-- End screen -->
+    <div id="end-screen" class="screen hidden">
+      <h1 class="end-title" id="end-title">Победа!</h1>
+      <p class="end-subtitle" id="end-subtitle">Уровень пройден</p>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Прогресс</div>
+          <div class="stat-value highlight" id="stat-pct">0%</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Время</div>
+          <div class="stat-value" id="stat-time">00:00</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Монеты</div>
+          <div class="stat-value" id="stat-coins">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Прыжков</div>
+          <div class="stat-value" id="stat-jumps">0</div>
+        </div>
+      </div>
+
+      <div id="leaderboard">
+        <h2>Таблица рекордов</h2>
+        <table id="lb-table"></table>
+      </div>
+
+      <div class="end-buttons">
+        <button id="btn-restart" class="btn btn-primary"><i class="fa-solid fa-rotate-right"></i> Снова</button>
+        <button id="btn-menu" class="btn btn-secondary"><i class="fa-solid fa-arrow-left"></i> Меню</button>
+      </div>
+    </div>
+
+    <!-- Font size controls -->
+    <button id="font-inc" title="Увеличить шрифт"><i class="fa-solid fa-plus"></i></button>
+    <button id="font-dec" title="Уменьшить шрифт"><i class="fa-solid fa-minus"></i></button>
+
+    <!-- Sound control -->
+    <button id="sound-btn" title="Звук"><i class="fa-solid fa-volume-high"></i></button>
+
+  </div><!-- end game-wrapper -->
+  <script src="scripts/script.js"></script>
+</body>
+</html>
